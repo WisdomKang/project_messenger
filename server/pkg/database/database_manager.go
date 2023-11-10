@@ -48,6 +48,12 @@ func dbConnect() *gorm.DB {
 
 	log.Printf("database connected : %s\n", db.Migrator().CurrentDatabase())
 
+	err = db.Exec("SET search_path TO post_chest").Error
+
+	if err != nil {
+		log.Panicf("database schema set error : %s\n", err)
+	}
+
 	sqlDB, err := db.DB()
 
 	if err != nil {
@@ -59,6 +65,12 @@ func dbConnect() *gorm.DB {
 	sqlDB.SetMaxOpenConns(100)
 
 	sqlDB.SetConnMaxLifetime(time.Minute * 30)
+
+	err = db.AutoMigrate(&User{}, &ChatRoom{}, &Message{})
+
+	if err != nil {
+		log.Panicf("database migrate error : %s\n", err)
+	}
 
 	return db
 }

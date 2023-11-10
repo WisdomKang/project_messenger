@@ -6,6 +6,7 @@ import (
 )
 
 func TestDatabaseInit(t *testing.T) {
+	t.Parallel()
 	dbservice := database.GetInstance()
 
 	if dbservice == nil {
