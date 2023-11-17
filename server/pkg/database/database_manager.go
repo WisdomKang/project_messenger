@@ -2,75 +2,90 @@ package database
 
 import (
 	"log"
+	"os"
+	"path/filepath"
 	"sync"
 	"time"
 
+	"github.com/spf13/viper"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-type DBManager struct {
-	DB gorm.DB
+type Config struct {
+	Database DatabaseConfig `mapstructure:"database"`
+}
+type DatabaseConfig struct {
+	DNS          string `mapstructure:"DNS"`
+	MaxOpenConns int    `mapstructure:"max_open_conns"`
+	MaxIdleConns int    `mapstructure:"max_idle_conns"`
 }
 
-var lock = &sync.Mutex{}
-var dbInstance *DBManager
+var db *gorm.DB
+var once sync.Once
 
-func GetInstance() *DBManager {
-	if dbInstance == nil {
-		lock.Lock()
-		defer lock.Unlock()
+func init() {
+	exePath, err := os.Getwd()
+	log.Println(exePath)
+	if err != nil {
+		log.Fatalf("Error finding executable path : %v", err)
+		return
+	}
 
-		if dbInstance == nil {
-			log.Println("Create DBManager instance now.")
-			dbInstance = &DBManager{
-				DB: *dbConnect(),
-			}
-		} else {
-			log.Println("DBManager intstance is already created.")
+	// 실행 파일이 있는 디렉토리 경로를 찾음
+	exeDir := filepath.Dir(exePath)
+
+	// 설정 파일의 경로를 조합
+	configPath := filepath.Join(exeDir, "config.yaml")
+
+	// read config.yaml
+	viper.SetConfigFile(configPath)
+	err = viper.ReadInConfig()
+	if err != nil {
+		log.Fatalf("Error reading config file : %v", err)
+	}
+}
+
+func InitDB() {
+	// Unmarshal config file
+	var databaseConfig DatabaseConfig
+	err := viper.Unmarshal(&databaseConfig)
+
+	if err != nil {
+		log.Fatalf("Error inmarshal databaseConfig:%v", err)
+	}
+
+	// Set Database connection
+	once.Do(func() {
+		dsn := databaseConfig.DNS
+		db, err := gorm.Open(
+			postgres.Open(dsn),
+			&gorm.Config{})
+
+		if err != nil {
+			log.Panicf("database init error : %s\n", err)
 		}
-	} else {
-		log.Println("DBManager intstance is already created.")
-	}
 
-	return dbInstance
+		log.Printf("database connected : %s\n", db.Migrator().CurrentDatabase())
+
+		// Set database schema
+		err = db.Exec("SET search_path TO post_chest").Error
+
+		if err != nil {
+			log.Panicf("database schema set error : %s\n", err)
+		}
+
+		sqlDB, err := db.DB()
+
+		if err != nil {
+			log.Panicf("database init error : %s\n", err)
+		}
+
+		// Set connection option
+		sqlDB.SetMaxIdleConns(databaseConfig.MaxIdleConns)
+		sqlDB.SetMaxOpenConns(databaseConfig.MaxOpenConns)
+		sqlDB.SetConnMaxLifetime(time.Minute * 30)
+	})
 }
 
-func dbConnect() *gorm.DB {
-	dsn := "host=localhost user=msgclient password=test1234 dbname=my_messenger port=5432 sslmode=disable TimeZone=Asia/Seoul"
-	db, err := gorm.Open(
-		postgres.Open(dsn),
-		&gorm.Config{})
-
-	if err != nil {
-		log.Panicf("database init error : %s\n", err)
-	}
-
-	log.Printf("database connected : %s\n", db.Migrator().CurrentDatabase())
-
-	err = db.Exec("SET search_path TO post_chest").Error
-
-	if err != nil {
-		log.Panicf("database schema set error : %s\n", err)
-	}
-
-	sqlDB, err := db.DB()
-
-	if err != nil {
-		log.Panicf("database init error : %s\n", err)
-	}
-
-	sqlDB.SetMaxIdleConns(10)
-
-	sqlDB.SetMaxOpenConns(100)
-
-	sqlDB.SetConnMaxLifetime(time.Minute * 30)
-
-	err = db.AutoMigrate(&User{}, &ChatRoom{}, &Message{})
-
-	if err != nil {
-		log.Panicf("database migrate error : %s\n", err)
-	}
-
-	return db
-}
+func GetDB() *gorm.DB { return db }
