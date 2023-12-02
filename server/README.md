@@ -19,5 +19,5 @@ docker run --name=my-database --env=POSTGRES_PASSWORD=mypassword -p 5432:5432 -d
 - Message Queue broker
 
 ```cmd
-docker run --hostname=my-rabbit -p 15672:15672 -p 5672:5672 -d rabbitmq:3-management
+docker run --hostname=my-rabbit --env=RABBITMQ_DEFAULT_PASS=password --env=RABBITMQ_DEFAULT_USER=user -p 15672:15672 -p 5672:5672 -d rabbitmq:3-management
 ```

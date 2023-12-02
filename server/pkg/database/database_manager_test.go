@@ -6,10 +6,13 @@ import (
 )
 
 func TestDatabaseInit(t *testing.T) {
-	dbservice := database.GetInstance()
+	// Do not use cache on test.
+	t.Parallel()
+	database.InitDB()
 
-	if dbservice == nil {
-		t.Log("fail")
+	db := database.GetDB()
+
+	if db != nil {
+		t.Fail()
 	}
-	t.Log("test")
 }
