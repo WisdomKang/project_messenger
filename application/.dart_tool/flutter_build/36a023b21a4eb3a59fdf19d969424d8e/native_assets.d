@@ -1,0 +1,1 @@
+ D:\\workspace\\go_workspace\\project_messenger\\application\\.dart_tool\\flutter_build\\36a023b21a4eb3a59fdf19d969424d8e\\native_assets.yaml: 
