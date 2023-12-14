@@ -32,11 +32,8 @@ func init() {
 		return
 	}
 
-	// 실행 파일이 있는 디렉토리 경로를 찾음
-	exeDir := filepath.Dir(exePath)
-
 	// 설정 파일의 경로를 조합
-	configPath := filepath.Join(exeDir, "config.yaml")
+	configPath := filepath.Join(exePath, "/config.yaml")
 
 	// read config.yaml
 	viper.SetConfigFile(configPath)
