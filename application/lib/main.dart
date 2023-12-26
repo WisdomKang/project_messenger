@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:my_messenger_application/firebase/firebase_message_setting.dart';
 import 'package:my_messenger_application/screen/login_screen.dart';
+import 'package:my_messenger_application/screen/main_screen.dart';
 
 Future<void> main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -19,7 +20,8 @@ Future<void> main() async {
   runApp(
     MaterialApp(
       routes: {
-        "/login" : (context) => LoginScreen()
+        "/login" : (context) => LoginScreen(),
+        "/main_screen": (context) => const MainScreen(),
       },
       initialRoute: "/login",
     )

@@ -13,7 +13,7 @@ late AndroidNotificationChannel channel;
 bool isFlutterLocalNotificationsInitialized = false;
 
 late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
-late String? FCMToken;
+late String? fcmToken;
 
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -51,7 +51,7 @@ Future<void> _setupFlutterNotifications() async {
 
   }
 
-const notificationId = "myMessengerProject";
+
 
 class MessageForm {
   static const String TITLE = "title";
@@ -62,6 +62,8 @@ void showFlutterNotificatoin(RemoteMessage message) {
   RemoteNotification? notification = message.notification;
 
   if ( message.data != null) {
+    print( "message data : ${message.data.toString()}");
+    const notificationId = "myMessengerProject";
     flutterLocalNotificationsPlugin.show(
         notificationId.hashCode,
         message.data[MessageForm.TITLE],
@@ -73,7 +75,7 @@ void showFlutterNotificatoin(RemoteMessage message) {
           priority: Priority.high,
           channelDescription: "설명할꼐 없는 테스트",
           importance: Importance.max,
-            // icon: 'launch_background'
+            icon: 'launch_background'
         )
       ),
     );
@@ -84,9 +86,8 @@ void showFlutterNotificatoin(RemoteMessage message) {
 
 Future<void> _setFCMToken() async {
   FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
-  FCMToken = await firebaseMessaging.getToken();
+  fcmToken = await firebaseMessaging.getToken();
 
-  print(" FCMToken : '$FCMToken'");
   // Token refresh setting
   firebaseMessaging.onTokenRefresh.listen((event) {
 
