@@ -1,117 +1,52 @@
 package queue
 
 import (
+	"fmt"
 	"log"
+	"os"
+	"strconv"
 	"strings"
 
-	"github.com/google/uuid"
-	amqp "github.com/rabbitmq/amqp091-go"
+	"gopkg.in/yaml.v3"
 )
 
-type ChatRoom struct {
-	ID       string
-	hubQueue *amqp.Queue
-	users    []string
+type Config struct {
+	AmqpBroker struct {
+		Host     string `yaml:"host"`
+		Port     int    `yaml:"port"`
+		UserName string `yaml:"username"`
+		Password string `yaml:"password"`
+	} `yaml:"amqp_broker"`
 }
 
-func CreateChatRoom(users []string) (chatroom *ChatRoom) {
-	chatroom = &ChatRoom{
-		ID:    createRoomId(),
-		users: users,
-	}
-
-	err := chatroom.CreateChatRoomQueue(chatroom.ID)
+func handleError(err error) {
 	if err != nil {
-		log.Fatalf("Error when create chatroom queue : %s", err)
+		log.Fatalf("system error : %s\n", err)
 	}
-
-	go chatroom.ConsumeAndPushMessage()
-
-	return
 }
 
-// func isExistQueue(roomId string) bool {
-// 	channel , err := MController.conn.Channel()
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
+func init() {
+	// Read configuration properties on yaml file
+	filePath, err := os.Getwd()
+	handleError(err)
 
-// }
+	configData, err := os.ReadFile(strings.Join([]string{filePath, "\\server_config.yaml"}, ""))
 
-func CreateUserQueue(userId string) (err error) {
-	channel, err := MController.conn.Channel()
+	handleError(err)
 
-	if err != nil {
-		return
-	}
+	var config Config
 
-	defer channel.Close()
+	err = yaml.Unmarshal(configData, &config)
 
-	_, err = channel.QueueDeclare(userId, true, false, false, false, nil)
-	return
+	handleError(err)
 
-}
+	brokerUrl := strings.Join(
+		[]string{
+			"amqp://",
+			config.AmqpBroker.UserName, ":",
+			config.AmqpBroker.Password, "@",
+			config.AmqpBroker.Host, ":",
+			strconv.Itoa((config.AmqpBroker.Port))}, "")
 
-func (chatroom *ChatRoom) CreateChatRoomQueue(roomId string) (err error) {
-	channel, err := MController.conn.Channel()
-
-	if err != nil {
-		return
-	}
-
-	defer channel.Close()
-
-	roomQueue, err := channel.QueueDeclare(combineName(roomId), false, false, false, false, nil)
-
-	if err != nil {
-		return
-	}
-
-	err = channel.QueueBind(
-		roomQueue.Name,
-		"",
-		MAIN_HUB_EXCHANGE_NAME,
-		false,
-		amqp.Table{
-			"x-match": "all",
-			"roomId":  chatroom.ID,
-		},
-	)
-
-	chatroom.hubQueue = &roomQueue
-
-	return
-}
-
-func (chatroom *ChatRoom) ConsumeAndPushMessage() {
-	channel, err := MController.conn.Channel()
-
-	if err != nil {
-		return
-	}
-
-	defer channel.Close()
-
-	msgs, err := channel.Consume(chatroom.hubQueue.Name, chatroom.ID, true, false, false, false, nil)
-
-	if err != nil {
-		return
-	}
-
-	for msg := range msgs {
-		log.Println("receive message")
-		log.Printf("msg headers : %s", msg.Headers)
-		log.Printf("msg body %s", msg.Body)
-		// save message
-		// publish message to chatroom client
-	}
-
-}
-
-func combineName(roomId string) string {
-	return strings.Join([]string{PREFIX_CHATROOM_HUB_NAME, roomId}, ".")
-}
-
-func createRoomId() string {
-	return uuid.New().String()
+	fmt.Println(brokerUrl)
 }

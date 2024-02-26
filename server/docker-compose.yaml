@@ -1,0 +1,24 @@
+version: '1.0'
+
+services:
+  amqp-broker:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=user
+      - RABBITMQ_DEFAULT_PASS=password
+    
+  database:
+    image: postgres:16.2
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=mypassword
+
+  # 서버에 필요한 서비스 추가 예정!
+
+networks:
+  messenser-network:
+    driver: bridge
