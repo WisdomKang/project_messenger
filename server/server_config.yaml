@@ -1,0 +1,12 @@
+
+amqp_broker:
+  host: "localhost"
+  port: 5672
+  username: "user"
+  password: "password"
+
+# database :
+#   host:
+#   port:
+#   username:
+#   password:
