@@ -21,6 +21,12 @@ class _HomeScreenState extends State<HomeScreen> {
     const SettingScreen()
   ];
 
+  final List<String> _pageNameList = <String>[
+    "Contracts",
+    "Chats",
+    "Setting",
+  ];
+
   void _onItemTapped(int index){
     setState(() {
       _pageIndex = index;
@@ -32,6 +38,9 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          title: Text(_pageNameList.elementAt(_pageIndex)),
+          backgroundColor: Colors.greenAccent,
+          toolbarHeight: 40.0,
         ),
         bottomNavigationBar: NavigationBar(
           onDestinationSelected: (int index){
@@ -44,10 +53,10 @@ class _HomeScreenState extends State<HomeScreen> {
             NavigationDestination(
               selectedIcon:  Icon(Icons.contact_page_outlined),
                 icon: Icon(Icons.contact_page) ,
-                label: "contact" ,
+                label: _pageNameList[0] ,
             ),
-            NavigationDestination(icon: Icon(Icons.chat) , label: "chatting" , ),
-            NavigationDestination(icon:Icon(Icons.settings) , label: "setting", ),
+            NavigationDestination(icon: Icon(Icons.chat) , label: _pageNameList[1] , ),
+            NavigationDestination(icon:Icon(Icons.settings) , label: _pageNameList[2], ),
           ],
           selectedIndex: _pageIndex,
           indicatorColor: Colors.greenAccent,
