@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:my_messenger_application/screen/chatlist_screen.dart';
-import 'package:my_messenger_application/screen/contract_screen.dart';
-import 'package:my_messenger_application/screen/setting_screen.dart';
+import 'package:my_messenger_application/screen/homesub/chat_list_screen.dart';
+import 'package:my_messenger_application/screen/homesub/contract_screen.dart';
+import 'package:my_messenger_application/screen/homesub/setting_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -16,7 +16,7 @@ class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
 
   final List<Widget> _pages = [
-    const ContractScreen(),
+    const ContractListScreen(),
     const ChatListScreen(),
     const SettingScreen(),
   ];
