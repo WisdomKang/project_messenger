@@ -36,8 +36,11 @@ google-services.json
 firebase_options.dart
 
 
+<<<<<<< HEAD
 # build files
 .dart_tool
+=======
+>>>>>>> main
 # See https://www.dartlang.org/guides/libraries/private-files
 
 # Files and directories created by pub
