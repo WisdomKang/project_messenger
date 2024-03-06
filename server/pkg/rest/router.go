@@ -3,6 +3,7 @@ package rest
 import (
 	"fmt"
 	"log"
+	"net/http"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -69,7 +70,7 @@ func setUserRouter() {
 
 func setChatroomRouter() {
 	chatroomAPI := Router.Group("/chatroom")
-	chatroomAPI.POST("")
+	chatroomAPI.POST("", CreateChatRoom)
 	chatroomAPI.GET("")
 	chatroomAPI.GET("/messages")
 }
@@ -82,4 +83,11 @@ func setMessageRouter() {
 func checkMyURL(r *gin.Context) {
 	fmt.Printf("이거 호출이 되야하는데? URL : %s\n", r.Request.URL)
 
+}
+
+func ErrorHandler(ctx *gin.Context, err error) {
+	if err != nil {
+		log.Printf("error : %s", err)
+		ctx.Status(http.StatusInternalServerError)
+	}
 }
