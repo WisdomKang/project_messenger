@@ -15,10 +15,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   int _pageIndex = 0;
 
-  List<Widget> _pageWidgetList = <Widget>[
-    ContractListScreen(),
-    ChatListScreen(),
-    SettingScreen()
+  final List<Widget> _pageWidgetList = <Widget>[
+    const ContractListScreen(),
+    const ChatListScreen(),
+    const SettingScreen()
   ];
 
   void _onItemTapped(int index){
