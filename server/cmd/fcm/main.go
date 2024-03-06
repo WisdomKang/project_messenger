@@ -13,7 +13,7 @@ import (
 
 func main() {
 
-	opt := option.WithCredentialsFile("project_privite_key.json")
+	opt := option.WithCredentialsFile("my-messenger-project-388816-firebase-adminsdk-lqvzt-57f4ef07a9.json")
 	app, err := firebase.NewApp(context.Background(), nil, opt)
 	if err != nil {
 		log.Fatalf("error initialize app : %v\n", err)
@@ -22,7 +22,9 @@ func main() {
 	message := &messaging.Message{
 		Data:         map[string]string{},
 		Notification: &messaging.Notification{},
-		Token:        "Firebase Token ",
+		Token:        "dzChXvGCRW-i563F2-MUx6:APA91bFM3pMcW4Q1-_1HVaQaMtJv_XWv2jY1UOGaqlwHiwdxkAwlExDBrbzAJDNg-cxomDlWvAHtZs3xyl6u_JlZ_LOrRV1cSVbfsjH05Hl9Oo3qfigq20nqMCMJxXMNub7Iwv_pLrEn",
+		// Token: "dkOrpxihRGiUUK3tOVvapa:APA91bFoiJEYDiY4KsHfPfSRUhvlIs8RsIBh27X-uturp7vuKytRMDs6V4VPKFQGI7RKeucbLGLQVibcqKIYicp0yQuTohZ4-19VNJf66qbxwixRl1331N976IWkKVLM-sxb05gZiqKT",
+		// Token: "e-YVSrnfRFCOhEY2Obwr-b:APA91bGYWEYX7FEwCNuvRu53n367_--IuVVoDlWgq9GFLVIsJaSK82uyEaZ2bhIKZbwXAOsUvEpoCgfVwxMGVhNdL8Cdgeh84C80_z31JBtLx-NVUnD9r0yEb3Q_pHvmYYtM5Lj_an0D",
 	}
 
 	msgClient, err := app.Messaging(context.Background())
