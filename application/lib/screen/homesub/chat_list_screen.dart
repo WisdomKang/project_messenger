@@ -12,17 +12,23 @@ class _ChatListScreenState extends State<ChatListScreen> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: ListView.builder(
-        itemCount: 10,
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Text("test $index"),
-            onTap: () {
+      child: ListView(
+        padding: EdgeInsets.all(8.0),
+        children: [
+          Row(
+            children: [
+              Text("Notification"),
+              Switch(
+                value: true,
+                activeColor: Colors.lime,
+                onChanged: (value) {
 
-            },
-          );
-        },
-      ),
+                },
+              )
+            ],
+          ),
+        ],
+      )
     );
   }
 }
